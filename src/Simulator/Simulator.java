@@ -1,6 +1,8 @@
 package Simulator;
 
-public class Simulator implements ISimulate{
+import Interfaces.ISimulate;
+
+public class Simulator implements ISimulate {
     @Override
     public void SelectFirstAgent() {
 

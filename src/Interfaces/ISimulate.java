@@ -1,4 +1,4 @@
-package Simulator;
+package Interfaces;
 
 public interface ISimulate {
     /*
