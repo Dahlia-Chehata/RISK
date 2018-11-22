@@ -1,5 +1,7 @@
 package Model;
 
+import java.util.LinkedList;
+import java.util.HashMap;;
 /**
  * 
  * @author Dahlia
@@ -13,6 +15,8 @@ public class Country {
 	private int currentArmiesNumber;
 	private int continentNumber; // partition
 	private boolean isVisited;
+	private HashMap<Country, LinkedList<Country>> neighbours;
+
 
 	public Country(int countryNumber) {
 		this.countryNumber = countryNumber;
@@ -65,4 +69,5 @@ public class Country {
 	public void setContinentName(int continentNumber) {
 		this.continentNumber = continentNumber;
 	}
+	
 }
