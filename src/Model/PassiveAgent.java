@@ -41,8 +41,11 @@ public class PassiveAgent extends Agent {
 
 	@Override
 	public void deterministicPlay() {
-		// TODO Auto-generated method stub
-		
+		List<Country> countriesOwned = getOwnedCountries();
+		Collections.sort(countriesOwned, Country.ArmyComparator);
+		Country weakestCountry = countriesOwned.get(0);
+		weakestCountry.setCurrentArmiesNumber(getArmiesNumber()); 
+		setArmiesNumber(0);		
 	}
 
 	@Override

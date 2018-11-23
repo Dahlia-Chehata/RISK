@@ -94,8 +94,14 @@ public class PacifistAgent extends Agent {
 		List<Country> defenderList = getDefenders();
 		Collections.sort(defenderList,Country.ArmyComparator); //defender country with smallest army
 		Country attacker = weakestCountry,defender=defenderList.get(0);
+		
 		// reinforcement 
+		List<Country> countriesOwned = getOwnedCountries();
+		Collections.sort(countriesOwned, Country.ArmyComparator);
+		Country weakestCountry = countriesOwned.get(0);
 		weakestCountry.setCurrentArmiesNumber(getArmiesNumber()); // current armies + 2 additional bonus in strongest country 
+		setArmiesNumber(0);		
+		
 		//Attack
 		DeterministicAttackPhase.startBattle(attacker, defender);
 		

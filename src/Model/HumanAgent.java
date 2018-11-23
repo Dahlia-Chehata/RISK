@@ -97,7 +97,10 @@ public class HumanAgent extends Agent {
 	    	return;
 		}
 		// reinforcement 
-		  attacker.setCurrentArmiesNumber(getArmiesNumber()); // current armies + 2 additional bonus in strongest country 
+		 
+		attacker.setCurrentArmiesNumber(getArmiesNumber()); // current armies + 2 additional bonus in strongest country
+		setArmiesNumber(0);
+
 		//Attack
 		  DeterministicAttackPhase.startBattle(attacker, defender);
 		 if (defender.getCurrentArmiesNumber() == 0) {
