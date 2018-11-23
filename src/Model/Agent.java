@@ -105,15 +105,7 @@ public abstract class Agent extends Observable {
 	public void getAdditionalBonus() {
 		setArmiesNumber(getArmiesNumber() + 2);
 	}
-	public Country getStrongestCountry() {
-		Country strongestCountry = getOwnedCountries().get(0);
-		for (Country country :getOwnedCountries()) {
-			if (country.getCurrentArmiesNumber() > strongestCountry.getCurrentArmiesNumber()) {
-				strongestCountry = country;
-			}
-		}
-		return strongestCountry;
-	}
+	
     public abstract void reinforce();
     public abstract void attack();
 	public void play() {

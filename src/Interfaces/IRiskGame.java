@@ -40,7 +40,6 @@ public interface IRiskGame {
      */
     ArrayList<Integer> get_players_ids();
     
-   
     /**
      * get the current player id in this turn.
      */

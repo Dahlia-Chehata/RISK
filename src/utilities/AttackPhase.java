@@ -53,6 +53,7 @@ public class AttackPhase {
 		else {
 			attacker.looseArmy();
 		}
+		
 		if (attackDiceRoll >1) {
 			if (defendDiceRoll == 2) {
 				// Comparing 2nd best dice roll

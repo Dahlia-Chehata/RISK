@@ -1,7 +1,6 @@
 package Model;
 
-import java.util.LinkedList;
-import java.util.HashMap;;
+import java.util.Comparator;
 /**
  * 
  * @author Dahlia
@@ -15,7 +14,6 @@ public class Country {
 	private int currentArmiesNumber;
 	private int continentNumber; // partition
 	private boolean isVisited;
-	private HashMap<Country, LinkedList<Country>> neighbours;
 
 
 	public Country(int countryNumber) {
@@ -70,4 +68,23 @@ public class Country {
 		this.continentNumber = continentNumber;
 	}
 	
+	/** The Army comparator. */
+	public static Comparator<Country> ArmyComparator = new Comparator<Country>() {
+
+		public int compare(Country country1, Country country2) {
+			if (country1.getCurrentArmiesNumber() == country2.getCurrentArmiesNumber()) {
+				if (country1.getcountryNumber()==country2.getcountryNumber()) {
+					return 0;
+				}else if(country1.getcountryNumber()>country2.getcountryNumber()) {
+					return -1;
+				} else {
+					return 1;
+				}
+			}
+			else if (country1.getCurrentArmiesNumber() > country2.getCurrentArmiesNumber())
+				return 1;
+			else
+				return -1;
+		}
+	};
 }

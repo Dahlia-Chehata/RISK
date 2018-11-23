@@ -4,20 +4,21 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-
 import utilities.AttackPhase;
 
 public class AggressiveAgent extends Agent {
     
 	private List<Country> defenderCountries;
-	
+	private Country strongestCountry;
 	public AggressiveAgent() {
 		super();
+		setAI(false);
 		defenderCountries= new ArrayList<>();
+	    strongestCountry= getStrongestCountry();	
 	}
 	@Override
 	public void reinforce() {
-       Country strongestCountry= getStrongestCountry();	
+	   setArmiesNumber(getArmiesNumber() + reinforcementArmies());
        strongestCountry.setCurrentArmiesNumber(strongestCountry.getCurrentArmiesNumber()+getArmiesNumber());
        setArmiesNumber(0);
 	}
@@ -26,7 +27,7 @@ public class AggressiveAgent extends Agent {
 	@Override
 	public void attack() {
 		List<Country> defenderList = getDefenders();
-		Country attacker = getStrongestCountry();	
+		Country attacker = strongestCountry;	
 		for (Country defender : defenderList) {
 			while (defender.getCurrentArmiesNumber() > 0 && attacker.getCurrentArmiesNumber() > 1) {
 				int diceAttacker = getRandomDice(attacker, 3);
@@ -39,12 +40,13 @@ public class AggressiveAgent extends Agent {
 				updateCountryOwner(defender, attacker);
 				setWinner(true);
 			}
-			if (attacker.getcountryNumber() == 1) {
+			if (attacker.getCurrentArmiesNumber() == 1) {
 				System.out.println("Aggressive Player lost the battle to country " + defender.getcountryNumber());
 				break;
 			}
 
 			if (AttackPhase.isEndOfAttack(this)) {
+				System.out.println("End of Attack");
 				break;
 			}
 		}
@@ -57,7 +59,7 @@ public class AggressiveAgent extends Agent {
 	
 	private List<Country> getDefenders() {
 		
-		LinkedList<Country> neighbours = RiskGame.getNeighbors().get(getStrongestCountry());
+		LinkedList<Country> neighbours = RiskGame.getNeighbors().get(strongestCountry);
 		
 		for (int i = 0; i < neighbours.size(); i++) {
 			Country adjacentCountry = neighbours.get(i);
@@ -90,5 +92,15 @@ public class AggressiveAgent extends Agent {
 			}
 		}
 		defender.setPlayerName(attacker.getPlayerName());
+	}
+	private Country getStrongestCountry() {
+		Country strongestCountry = getOwnedCountries().get(0);
+		for (Country country :getOwnedCountries()) {
+			if ((country.getCurrentArmiesNumber() > strongestCountry.getCurrentArmiesNumber())||
+					(country.getCurrentArmiesNumber() == strongestCountry.getCurrentArmiesNumber()&&country.getcountryNumber()<strongestCountry.getcountryNumber())) {
+				strongestCountry = country;
+			}
+		}
+		return strongestCountry;
 	}
 }
