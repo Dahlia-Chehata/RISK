@@ -1,8 +1,6 @@
 package Interfaces;
 
 import java.util.ArrayList;
-
-import Model.Agent;
 import javafx.util.Pair;
 
 public interface IRiskGame {
@@ -16,7 +14,7 @@ public interface IRiskGame {
     Boolean set_count_of_countries(int countries_count);
     Boolean add_edge(int country_id_1, int country_id_2);
     Boolean set_count_of_paritions(int partitions_count);
-    Boolean add_partition(int partition_bounce, ArrayList<Integer> partition_countries_ids);
+    Boolean add_partition(int partition_bonus, ArrayList<Integer> partition_countries_ids);
     Boolean add_soldiers(int player_id, int country_id, int soldiers_count);
     
 
@@ -66,9 +64,24 @@ public interface IRiskGame {
     int get_country_owner(int country_id);
     
     /**
+     * get the continent_id of the country.
+     */
+    int get_country_continent(int country_id);
+    
+    /**
      * get the countries_id of this country.
      */
     ArrayList<Integer> get_country_neighbours(int country_id);
+    
+    /**
+     * get the a list of countries in the given continent.
+     */
+    ArrayList<Integer> get_continent_countries(int continent_id);
+    
+    /**
+     * get the a list of countries in the given continent.
+     */
+    int get_continent_bonus(int continent_id);
     
     /**
      * return list of countries that player can attack.
@@ -101,10 +114,10 @@ public interface IRiskGame {
      */
     
     int get_cp_reinforcement_soldiers();
-    int get_cp_bounce_soldiers();
+    int get_cp_bonus_soldiers();
     
     /**
-     * this is the first step in the game and it will put all reinforcement + bounce
+     * this is the first step in the game and it will put all reinforcement + bonus
      * soldiers in the selected country. this country must be owned by the 
      * current player.
      * @return true if country owned by the current player, false otherwise.
@@ -125,9 +138,8 @@ public interface IRiskGame {
     
     /**
      * this end the current turn for the current player.
-     * this function is optional if the player done single attack on the enemy.
-     * and it's required to be called if the player didn't attack the enemy.
-     * @return true if no reinforcement or bounce soldiers remaining, false
+     * it's required to be called after the player ends its turn.
+     * @return true if no reinforcement or bonus soldiers remaining, false
      * otherwise.
      */
     Boolean end_turn();
