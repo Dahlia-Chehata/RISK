@@ -1,13 +1,15 @@
-package utilities;
+package utilities.DiceBasedGame;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 import Model.Agent;
 import Model.Country;
+import Model.RiskGame;
 
-public class AttackPhase {
+public class DiceBasedAttackPhase {
 	/**
 	 * checks if the attack phase ends 
 	 * @param agent
@@ -99,5 +101,16 @@ public class AttackPhase {
 			diceCount = 1 + random.nextInt(maxDice);
 		}
 		return diceCount;
+	}
+  public static void updateCountryOwner(Country defender, Country attacker) {
+		List<Agent> playerList = RiskGame.getPlayersList();
+		for (int i = 0; i < playerList.size(); i++) {
+			if (playerList.get(i).getPlayerName().equals(defender.getPlayerName())) {
+				playerList.get(i).removeCountry(defender);
+			} else if (playerList.get(i).getPlayerName().equals(attacker.getPlayerName())) {
+				playerList.get(i).addCountry(defender);
+			}
+		}
+		defender.setPlayerName(attacker.getPlayerName());
 	}
 }

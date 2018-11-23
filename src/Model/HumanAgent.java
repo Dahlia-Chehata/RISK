@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import utilities.AttackPhase;
+import utilities.DeterministicGame.DeterministicAttackPhase;
+import utilities.DiceBasedGame.DiceBasedAttackPhase;
 
 public class HumanAgent extends Agent {
 	private List<Country> defenderCountries;
@@ -23,7 +24,7 @@ public class HumanAgent extends Agent {
 	}
 
 	@Override
-	public void attack(Country attacker, Country defender) {
+	public void diceBasedAttack(Country attacker, Country defender) {
 		
 	    if (!getOwnedCountries().contains(attacker)) {
 	    	System.out.println("Choose a counntry from your own list");
@@ -35,9 +36,9 @@ public class HumanAgent extends Agent {
 	    	return;
 		}
 		while (defender.getCurrentArmiesNumber() > 0 && attacker.getCurrentArmiesNumber() >= 1) {
-			int diceAttacker = AttackPhase.getRandomDice(attacker, 3);
-			int diceDefender = AttackPhase.getRandomDice(attacker, 2);
-			AttackPhase.startBattle(attacker, defender, diceAttacker, diceDefender);
+			int diceAttacker = DiceBasedAttackPhase.getRandomDice(attacker, 3);
+			int diceDefender = DiceBasedAttackPhase.getRandomDice(attacker, 2);
+			DiceBasedAttackPhase.startBattle(attacker, defender, diceAttacker, diceDefender);
 		}
 		
 		if (attacker.getCurrentArmiesNumber() < 1) {
@@ -45,7 +46,7 @@ public class HumanAgent extends Agent {
 			return;
 		}else if (defender.getCurrentArmiesNumber() == 0) {
 				defender.setCurrentArmiesNumber(0);
-			    updateCountryOwner(defender, attacker);
+				DiceBasedAttackPhase.updateCountryOwner(defender, attacker);
 				setWinner(true);
 				getAdditionalBonus();
 				System.out.println("Player captured country" + defender.getcountryNumber());
@@ -64,17 +65,7 @@ public class HumanAgent extends Agent {
 		return defenderCountries;
 	}
 
-	private void updateCountryOwner(Country defender, Country attacker) {
-		List<Agent> playerList = RiskGame.getPlayersList();
-		for (int i = 0; i < playerList.size(); i++) {
-			if (playerList.get(i).getPlayerName().equals(defender.getPlayerName())) {
-				playerList.get(i).removeCountry(defender);
-			} else if (playerList.get(i).getPlayerName().equals(attacker.getPlayerName())) {
-				playerList.get(i).addCountry(defender);
-			}
-		}
-		defender.setPlayerName(attacker.getPlayerName());
-	}
+	
 
 	@Override
 	public void reinforce() {
@@ -83,8 +74,37 @@ public class HumanAgent extends Agent {
 	}
 
 	@Override
-	public void attack() {
+	public void diceBaseAttack() {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void deterministicPlay() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deterministicPlay(Country attacker, Country defender) {
+		if (!getOwnedCountries().contains(attacker)) {
+	    	System.out.println("Choose a counntry from your own list");
+	    	return;
+	    }
+		List<Country> defenderList = getDefenders(attacker);
+		if (!defenderList.contains(defender)) {
+			System.out.println("You cannot attack a non neighbour country ");
+	    	return;
+		}
+		// reinforcement 
+		  attacker.setCurrentArmiesNumber(getArmiesNumber()); // current armies + 2 additional bonus in strongest country 
+		//Attack
+		  DeterministicAttackPhase.startBattle(attacker, defender);
+		 if (defender.getCurrentArmiesNumber() == 0) {
+			 System.out.println("Player captured country " + defender.getcountryNumber());
+			 DeterministicAttackPhase.AfterAttack(attacker, defender);
+			 getAdditionalBonus();
+			 setWinner(true);
+		}		
 	}
 }

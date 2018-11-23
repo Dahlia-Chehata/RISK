@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import utilities.AttackPhase;
+
+import utilities.DeterministicGame.DeterministicAttackPhase;
+import utilities.DiceBasedGame.DiceBasedAttackPhase;
 
 public class AggressiveAgent extends Agent {
     
@@ -25,24 +27,24 @@ public class AggressiveAgent extends Agent {
 	
 
 	@Override
-	public void attack() {
+	public void diceBaseAttack() {
 		List<Country> defenderList = getDefenders();
 		Collections.sort(defenderList,Country.ArmyComparator); //defender country with largest army
 		Country attacker = strongestCountry,defender=defenderList.get(defenderList.size()-1);	
 
-		while (defender.getCurrentArmiesNumber() > 0 && attacker.getCurrentArmiesNumber() >= 1) {
-				int diceAttacker = AttackPhase.getRandomDice(attacker, 3);
-				int diceDefender = AttackPhase.getRandomDice(attacker, 2);
-				AttackPhase.startBattle(attacker, defender, diceAttacker, diceDefender);
+		while (defender.getCurrentArmiesNumber() > 0 && attacker.getCurrentArmiesNumber() > 1) {
+				int diceAttacker = DiceBasedAttackPhase.getRandomDice(attacker, 3);
+				int diceDefender = DiceBasedAttackPhase.getRandomDice(attacker, 2);
+				DiceBasedAttackPhase.startBattle(attacker, defender, diceAttacker, diceDefender);
 			}
 
 			if (defender.getCurrentArmiesNumber() == 0) {
 				System.out.println("Aggressive Player captured country" + defender.getcountryNumber());
-				updateCountryOwner(defender, attacker);
+				DiceBasedAttackPhase.updateCountryOwner(defender, attacker);
 				getAdditionalBonus();
 				setWinner(true);
 			}
-			if (attacker.getCurrentArmiesNumber() < 1) {
+			if (attacker.getCurrentArmiesNumber() == 1) {
 				System.out.println("Aggressive Player lost the battle to country " + defender.getcountryNumber());
 			}
 
@@ -69,17 +71,6 @@ public class AggressiveAgent extends Agent {
 		return defenderCountries;
 	}
 	
-	private void updateCountryOwner(Country defender, Country attacker) {
-		List<Agent> playerList = RiskGame.getPlayersList();
-		for (int i = 0; i < playerList.size(); i++) {
-			if (playerList.get(i).getPlayerName().equals(defender.getPlayerName())) {
-				playerList.get(i).removeCountry(defender);
-			} else if (playerList.get(i).getPlayerName().equals(attacker.getPlayerName())) {
-				playerList.get(i).addCountry(defender);
-			}
-		}
-		defender.setPlayerName(attacker.getPlayerName());
-	}
 	private Country getStrongestCountry() {
 		Country strongestCountry = getOwnedCountries().get(0);
 		for (Country country :getOwnedCountries()) {
@@ -91,12 +82,34 @@ public class AggressiveAgent extends Agent {
 		return strongestCountry;
 	}
 	@Override
+	public void deterministicPlay() {
+		List<Country> defenderList = getDefenders();
+		Collections.sort(defenderList,Country.ArmyComparator); //defender country with largest army
+		Country attacker = strongestCountry,defender=defenderList.get(defenderList.size()-1);	
+		// reinforcement 
+		strongestCountry.setCurrentArmiesNumber(getArmiesNumber()); // current armies + 2 additional bonus in strongest country 
+		//Attack
+		DeterministicAttackPhase.startBattle(attacker, defender);
+		if (defender.getCurrentArmiesNumber() == 0) {
+			System.out.println("Aggressive Player captured country " + defender.getcountryNumber());
+			DeterministicAttackPhase.AfterAttack(attacker, defender);
+			getAdditionalBonus();
+			setWinner(true);
+		}
+	}
+	@Override
 	public void reinforce(Country country) {
 		// TODO Auto-generated method stub
 		
 	}
 	@Override
-	public void attack(Country attacker, Country defender) {
+	public void diceBasedAttack(Country attacker, Country defender) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void deterministicPlay(Country attacker, Country defender) {
 		// TODO Auto-generated method stub
 		
 	}

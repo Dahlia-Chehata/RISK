@@ -22,7 +22,7 @@ public class PassiveAgent extends Agent {
 	}
 
 	@Override
-	public void attack() {
+	public void diceBaseAttack() {
 		// Nothing to do here
 
 	}
@@ -34,7 +34,19 @@ public class PassiveAgent extends Agent {
 	}
 
 	@Override
-	public void attack(Country attacker, Country defender) {
+	public void diceBasedAttack(Country attacker, Country defender) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deterministicPlay() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deterministicPlay(Country attacker, Country defender) {
 		// TODO Auto-generated method stub
 		
 	}

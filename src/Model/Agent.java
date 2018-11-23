@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
-import utilities.AttackPhase;
-import utilities.ReinforcementPhase;
+import utilities.DiceBasedGame.DiceBasedAttackPhase;
+import utilities.DiceBasedGame.FactorOf3ReinforcementPhase;
 
 public abstract class Agent extends Observable {
 	private String playerName;
@@ -93,11 +93,11 @@ public abstract class Agent extends Observable {
 	}
 
 	public int reinforcementArmies() {
-		return ReinforcementPhase.calculateReinforcementArmies(this);
+		return FactorOf3ReinforcementPhase.calculateReinforcementArmies(this);
 	}
 
 	public void attackOpponent(Country attacker, Country defender, int attackerDice, int defenderDice) {
-		AttackPhase.startBattle(attacker, defender, attackerDice, defenderDice);
+		DiceBasedAttackPhase.startBattle(attacker, defender, attackerDice, defenderDice);
 	}
 
 	/**
@@ -107,17 +107,28 @@ public abstract class Agent extends Observable {
 		setArmiesNumber(getArmiesNumber() + 2);
 	}
 	
+	/***************************************  Playing   *********************************/
+	
+	/** Dice Base game methods **/
+	// non human agents
     public abstract void reinforce();
-    public abstract void attack();
-	public void play() {
+    public abstract void diceBaseAttack();
+	public void diceBasedPlay() {
       reinforce();
-      attack();
+      diceBaseAttack();
 	}
+	//human agent
 	public abstract void reinforce(Country country) ;
-	public abstract void attack(Country attacker, Country defender) ;
-	public void play (Country countryToReinforce, Country attacker, Country defender) {
+	public abstract void diceBasedAttack(Country attacker, Country defender) ;
+	public void diceBasedPlay (Country countryToReinforce, Country attacker, Country defender) {
 		reinforce(countryToReinforce);
-		attack (attacker,defender);
+		diceBasedAttack (attacker,defender);
 	}
 	
+	/** Deterministic game method **/
+	// non human agents
+	 public abstract void deterministicPlay();
+	// human agent
+	 public abstract void deterministicPlay(Country attacker, Country defender);
+	 
 }

@@ -1,9 +1,9 @@
-package utilities;
+package utilities.DiceBasedGame;
 
 import Model.Agent;
 import Model.Country;
 
-public class ReinforcementPhase {
+public class FactorOf3ReinforcementPhase {
 	/**
 	 * defines the placement of the army for a player in each turn except for the first turn 
 	 * @param agent
