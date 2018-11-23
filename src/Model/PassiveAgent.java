@@ -27,4 +27,16 @@ public class PassiveAgent extends Agent {
 
 	}
 
+	@Override
+	public void reinforce(Country country) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void attack(Country attacker, Country defender) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

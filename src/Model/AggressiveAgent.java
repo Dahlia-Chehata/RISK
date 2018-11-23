@@ -1,9 +1,9 @@
 package Model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 import utilities.AttackPhase;
 
 public class AggressiveAgent extends Agent {
@@ -27,30 +27,29 @@ public class AggressiveAgent extends Agent {
 	@Override
 	public void attack() {
 		List<Country> defenderList = getDefenders();
-		Country attacker = strongestCountry;	
-		for (Country defender : defenderList) {
-			while (defender.getCurrentArmiesNumber() > 0 && attacker.getCurrentArmiesNumber() > 1) {
-				int diceAttacker = getRandomDice(attacker, 3);
-				int diceDefender = getRandomDice(attacker, 2);
+		Collections.sort(defenderList,Country.ArmyComparator); //defender country with largest army
+		Country attacker = strongestCountry,defender=defenderList.get(defenderList.size()-1);	
+
+		while (defender.getCurrentArmiesNumber() > 0 && attacker.getCurrentArmiesNumber() >= 1) {
+				int diceAttacker = AttackPhase.getRandomDice(attacker, 3);
+				int diceDefender = AttackPhase.getRandomDice(attacker, 2);
 				AttackPhase.startBattle(attacker, defender, diceAttacker, diceDefender);
 			}
 
 			if (defender.getCurrentArmiesNumber() == 0) {
 				System.out.println("Aggressive Player captured country" + defender.getcountryNumber());
 				updateCountryOwner(defender, attacker);
+				getAdditionalBonus();
 				setWinner(true);
 			}
-			if (attacker.getCurrentArmiesNumber() == 1) {
+			if (attacker.getCurrentArmiesNumber() < 1) {
 				System.out.println("Aggressive Player lost the battle to country " + defender.getcountryNumber());
-				break;
 			}
 
-			if (AttackPhase.isEndOfAttack(this)) {
-				System.out.println("End of Attack");
-				break;
-			}
-		}
-
+//			if (AttackPhase.isEndOfAttack(this)) {
+//				System.out.println("End of Attack");
+//				break;
+//			}
 	}
 	/**
 	 * get the defenders countries around the country with the largest armies number
@@ -69,19 +68,7 @@ public class AggressiveAgent extends Agent {
 		}
 		return defenderCountries;
 	}
-	private int getRandomDice(Country attacker, int maxDice) {
-		int attackerArmies = attacker.getCurrentArmiesNumber();
-		Random random;
-		int diceCount;
-		if (attackerArmies <= maxDice) {
-			random = new Random();
-			diceCount = 1 + random.nextInt(attackerArmies - 1);
-		} else {
-			random = new Random();
-			diceCount = 1 + random.nextInt(maxDice);
-		}
-		return diceCount;
-	}
+	
 	private void updateCountryOwner(Country defender, Country attacker) {
 		List<Agent> playerList = RiskGame.getPlayersList();
 		for (int i = 0; i < playerList.size(); i++) {
@@ -102,5 +89,15 @@ public class AggressiveAgent extends Agent {
 			}
 		}
 		return strongestCountry;
+	}
+	@Override
+	public void reinforce(Country country) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void attack(Country attacker, Country defender) {
+		// TODO Auto-generated method stub
+		
 	}
 }

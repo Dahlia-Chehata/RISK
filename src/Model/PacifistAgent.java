@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import utilities.AttackPhase;
+
 public class PacifistAgent extends Agent {
 
 	private List<Country> defenderCountries;
@@ -31,15 +33,27 @@ public class PacifistAgent extends Agent {
 		List<Country> defenderList = getDefenders();
 		Collections.sort(defenderList,Country.ArmyComparator); //defender country with smallest army
 		Country attacker = weakestCountry,defender=defenderList.get(0);
-			if (defender.getCurrentArmiesNumber() - attacker.getCurrentArmiesNumber()>= 1) {
-				System.out.println("Cannot Attack: Lacking Armies");
-			} else {
+		int attackerInitArmiesNumber = attacker.getCurrentArmiesNumber();
+		int defenderInitArmiesNumber = defender.getCurrentArmiesNumber();
+		
+		while (defender.getCurrentArmiesNumber() > 0 && attacker.getCurrentArmiesNumber() >= 1) {
+			int diceAttacker = AttackPhase.getRandomDice(attacker, 3);
+			int diceDefender = AttackPhase.getRandomDice(attacker, 2);
+			AttackPhase.startBattle(attacker, defender, diceAttacker, diceDefender);
+		}
+		if (attacker.getCurrentArmiesNumber() < 1) {
+			System.out.println("Cannot Attack: Lacking Armies");
+			// return to the initial state
+			attacker.setCurrentArmiesNumber(attackerInitArmiesNumber);
+			defender.setCurrentArmiesNumber(defenderInitArmiesNumber);
+		}else if (defender.getCurrentArmiesNumber() == 0) {
 				defender.setCurrentArmiesNumber(0);
 			    updateCountryOwner(defender, attacker);
 				setWinner(true);
 				getAdditionalBonus();
-				System.out.println("Aggressive Player captured country" + defender.getcountryNumber());
-			}
+				System.out.println("Pacifist Player captured country" + defender.getcountryNumber());
+		}
+		
 	}
 
 	/**
@@ -72,5 +86,17 @@ public class PacifistAgent extends Agent {
 			}
 		}
 		defender.setPlayerName(attacker.getPlayerName());
+	}
+
+	@Override
+	public void reinforce(Country country) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void attack(Country attacker, Country defender) {
+		// TODO Auto-generated method stub
+		
 	}
 }

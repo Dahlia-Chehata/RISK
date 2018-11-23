@@ -21,13 +21,32 @@ public class AttackPhase {
 		}
 		return true;
    }
-   /**
-    * comparing dice rolls for attacker and defendant
-    * @param attacker
-    * @param defender
-    * @param attackDiceRoll
-    * @param defendDiceRoll
-    */
+   
+	/**
+	 * comparing dice rolls for attacker and defendant
+	 * 
+	 * The game of RISK is played such that two players are allowed to "attack" and "defend" in the following
+	 *  ways:
+	 *
+	 * a) the "attacker" may roll 1, 2, or 3 dice.
+	 * b) the "defender" may roll 1 or 2 dice.
+	 * c) the highest rolled attack dice is compared to the highest rolled defense dice, and
+	 *    1. the attacker loses if the attack dice <= defense dice,
+	 *    2. the defender loses if the attack dice > defense dice. 
+	 * d) The compared dice are discarded, and if each player still has dice left, repeat c) above.
+	 *  
+	 *  The number of armies you attack with will determine how many dice you get to roll when you square off the opponent whose territory you are defending.[12]
+     *  1 army = 1 die
+     *  2 armies = 2 dice
+     *  3 armies = 3 dice
+     *  
+	 *  reference : https://web.stanford.edu/~guertin/risk.notes.html
+	 * 
+	 * @param attacker
+	 * @param defender
+	 * @param attackDiceRoll
+	 * @param defendDiceRoll
+	 */
    public static void startBattle(Country attacker, Country defender, int attackDiceRoll, int defendDiceRoll) {
 	    Integer[] attackDice = new Integer[attackDiceRoll];
 		Integer[] defendDice = new Integer[defendDiceRoll];
@@ -54,6 +73,9 @@ public class AttackPhase {
 			attacker.looseArmy();
 		}
 		
+		String message2 = "Caclulating the  second highest dice roll";
+		System.out.println(message2);
+		
 		if (attackDiceRoll >1) {
 			if (defendDiceRoll == 2) {
 				// Comparing 2nd best dice roll
@@ -65,4 +87,17 @@ public class AttackPhase {
 			}
 		}	
    }
+  public static int getRandomDice(Country attacker, int maxDice) {
+		int attackerArmies = attacker.getCurrentArmiesNumber();
+		Random random;
+		int diceCount;
+		if (attackerArmies <= maxDice) {
+			random = new Random();
+			diceCount = 1 + random.nextInt(attackerArmies - 1);
+		} else {
+			random = new Random();
+			diceCount = 1 + random.nextInt(maxDice);
+		}
+		return diceCount;
+	}
 }

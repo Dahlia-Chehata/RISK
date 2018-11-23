@@ -19,6 +19,7 @@ public abstract class Agent extends Observable {
 	public Agent() {
 		ownedCountries = new ArrayList<>();
 		ownedContinents = new ArrayList<>();
+		isWinner = false;
 	}
 
 	public boolean isAI() {
@@ -112,4 +113,11 @@ public abstract class Agent extends Observable {
       reinforce();
       attack();
 	}
+	public abstract void reinforce(Country country) ;
+	public abstract void attack(Country attacker, Country defender) ;
+	public void play (Country countryToReinforce, Country attacker, Country defender) {
+		reinforce(countryToReinforce);
+		attack (attacker,defender);
+	}
+	
 }
