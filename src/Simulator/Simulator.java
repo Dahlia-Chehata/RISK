@@ -4,17 +4,24 @@ import Interfaces.ISimulate;
 
 public class Simulator implements ISimulate {
     @Override
-    public void SelectFirstAgent() {
+    public void selectFirstAgent(String player) {
 
     }
 
     @Override
-    public void SelectSecondAgent() {
+    public void selectSecondAgent(String player) {
 
     }
 
     @Override
-    public int Simulate() {
-        return 0;
+    public void firstMakeStep() {
+
     }
+
+    @Override
+    public void secondMakeStep() {
+
+    }
+
+
 }

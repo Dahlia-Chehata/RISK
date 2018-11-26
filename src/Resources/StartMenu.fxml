@@ -49,7 +49,7 @@
                                         <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: Black;" text="Agent Two" textAlignment="CENTER" textFill="WHITE" wrapText="true" GridPane.rowIndex="2" />
                                         <ChoiceBox fx:id="agentOne" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                         <ChoiceBox fx:id="agentTwo" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                        <Button fx:id="simulationButton1" onAction="#startSimulation" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" style="-fx-background-color: Orange;" text="Start Simulation" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                        <Button fx:id="simulationButton1" onAction="#startSimulation1" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" style="-fx-background-color: Orange;" text="Start Simulation" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                     </children>
                                 </GridPane>
                             </children>
@@ -78,7 +78,7 @@
                                             </font>
                                         </Label>
                                         <ChoiceBox fx:id="intelligentAgent"  maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                        <Button fx:id="simulationButton2" onAction="#startSimulation" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" style="-fx-background-color: Orange;" text="Start Simulation" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                        <Button fx:id="simulationButton2" onAction="#startSimulation2" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" style="-fx-background-color: Orange;" text="Start Simulation" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                     </children>
                                 </GridPane>
                             </children>
