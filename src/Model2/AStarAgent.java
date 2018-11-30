@@ -85,16 +85,20 @@ public class AStarAgent implements IAgent{
         game_ = game;
         my_id_ = player_id;
         enemy_id_ = enemy_id;
-        
-        try {
-            A_Star_initialization();
-        } catch (CloneNotSupportedException ex) {
-            random_moves_ = true;
-        }
     }
     
     @Override
     public void make_move() {
+        
+        //handle first call
+        if(random_moves_ == false && wining_moves_.size() == 0) {
+            try {
+                A_Star_initialization();
+            } catch (CloneNotSupportedException ex) {
+                random_moves_ = true;
+            }
+        }
+        
         if(random_moves_) {
             //move the army to any country I have
             game_.set_cp_soldiers(game_.get_player_countries(my_id_).get(0));
@@ -243,59 +247,6 @@ public class AStarAgent implements IAgent{
         return game.get_player_countries(enemy_id_).size();
     }
     
-    public static void main(String argc[]) throws CloneNotSupportedException {
-        
-        
-        AStarAgent x = new AStarAgent();
-        RiskGame r = new RiskGame();
-        
-        
-        r.set_count_of_countries(8);
-        for(int i=0; i<8; i++) {
-            for(int j=0; j<4; j++) {
-                r.add_edge(i, j);
-            }
-        }
-        r.set_count_of_paritions(3);
-        
-        
-        ArrayList f = new ArrayList<Integer>(2);
-        f.add(0);
-        f.add(1);
-        r.add_partition(4, f);
-        f.set(0, 2);
-        f.set(1, 3);
-        r.add_partition(4, f);
-        f = new ArrayList<Integer>(4);
-        f.add(4);
-        f.add(5);
-        f.add(6);
-        f.add(7);
-        r.add_partition(8, f);
-        
-        
-        for(int i=0; i<4; i++) {
-            r.add_soldiers(1, i, 1);
-        }
-        for(int i=4; i<8; i++) {
-            r.add_soldiers(2, i, 1);
-        }
-        
-        r.start_game();
-        //x.set_game_info(r, 1, 2);
-        
-        //Test the simulator
-        Simulator sim = new Simulator();
-        sim.SelectFirstAgent("AStar");
-        sim.SelectSecondAgent("Passive");
-        sim.SetGameObject(r);
-        for(int i=0; i<1000; i++) {
-            System.out.println(sim.SimulateSingleStep2Agents());
-            System.out.println(r.get_player_countries(1));
-            System.out.println(r.get_player_countries(2));
-            System.out.println(" ");
-        }
 
-    }
     
 }
