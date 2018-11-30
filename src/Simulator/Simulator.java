@@ -16,6 +16,10 @@ public class Simulator implements ISimulate{
     IAgent last_player;
     IRiskGame game;
     
+    Simulator() {
+        game = null;
+    }
+    
     private IAgent selectAgent(String agentName) {
         switch(agentName) {
             case "AStar":
@@ -37,11 +41,19 @@ public class Simulator implements ISimulate{
     @Override
     public void SelectFirstAgent(String player) {
         player1 = selectAgent(player);
+        if(game != null) {
+            ArrayList<Integer> players = game.get_players_ids();
+            player1.set_game_info((RiskGame) game, players.get(0), players.get(1));
+        }
     }
 
     @Override
     public void SelectSecondAgent(String player) {
         player2 = selectAgent(player);
+        if(game != null) {
+            ArrayList<Integer> players = game.get_players_ids();
+            player2.set_game_info((RiskGame) game, players.get(1), players.get(0));
+        }
     }
 
     @Override
