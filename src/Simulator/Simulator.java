@@ -41,7 +41,7 @@ public class Simulator implements ISimulate{
     @Override
     public void SelectFirstAgent(String player) {
         player1 = selectAgent(player);
-        if(game != null) {
+        if(game != null && player1 != null) {
             ArrayList<Integer> players = game.get_players_ids();
             player1.set_game_info((RiskGame) game, players.get(0), players.get(1));
         }
@@ -50,7 +50,7 @@ public class Simulator implements ISimulate{
     @Override
     public void SelectSecondAgent(String player) {
         player2 = selectAgent(player);
-        if(game != null) {
+        if(game != null && player2 != null) {
             ArrayList<Integer> players = game.get_players_ids();
             player2.set_game_info((RiskGame) game, players.get(1), players.get(0));
         }
