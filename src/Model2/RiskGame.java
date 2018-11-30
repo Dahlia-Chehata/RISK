@@ -3,13 +3,14 @@ package Model2;
 import Interfaces.IRiskGame;
 import static java.lang.Integer.max;
 import java.util.ArrayList;
+import java.util.Objects;
 import javafx.util.Pair;
 
 /**
  *
  * @author faresmehanna
  */
-public class RiskGame implements IRiskGame{
+public class RiskGame implements IRiskGame, Cloneable{
     
     //players info
     private final int player_1_; //constant value
@@ -56,6 +57,105 @@ public class RiskGame implements IRiskGame{
         player_1_ = 1;
         player_2_ = 2;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final RiskGame other = (RiskGame) obj;
+        if (this.player_1_ != other.player_1_) {
+            return false;
+        }
+        if (this.player_2_ != other.player_2_) {
+            return false;
+        }
+        if (this.countries_count_ != other.countries_count_) {
+            return false;
+        }
+        if (this.player_1_countries_ != other.player_1_countries_) {
+            return false;
+        }
+        if (this.player_2_countries_ != other.player_2_countries_) {
+            return false;
+        }
+        if (this.partitions_count_ != other.partitions_count_) {
+            return false;
+        }
+        if (this.inner_partition_counter_ != other.inner_partition_counter_) {
+            return false;
+        }
+        if (this.winner_player_ != other.winner_player_) {
+            return false;
+        }
+        if (this.turn_state_ != other.turn_state_) {
+            return false;
+        }
+        if (this.current_player_ != other.current_player_) {
+            return false;
+        }
+        if (this.attack_bonus_player_id_ != other.attack_bonus_player_id_) {
+            return false;
+        }
+        if (this.attack_bonus_ != other.attack_bonus_) {
+            return false;
+        }
+        if (!Objects.equals(this.countries_list_owner_, other.countries_list_owner_)) {
+            return false;
+        }
+        if (!Objects.equals(this.countries_list_soldiers_, other.countries_list_soldiers_)) {
+            return false;
+        }
+        if (!Objects.equals(this.countries_edges_matrix_, other.countries_edges_matrix_)) {
+            return false;
+        }
+        if (!Objects.equals(this.partitions_bonus_, other.partitions_bonus_)) {
+            return false;
+        }
+        if (!Objects.equals(this.partitions_countries_, other.partitions_countries_)) {
+            return false;
+        }
+        if (!Objects.equals(this.game_started_, other.game_started_)) {
+            return false;
+        }
+        if (!Objects.equals(this.game_ended_, other.game_ended_)) {
+            return false;
+        }
+        return true;
+    }
+
+
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 23 * hash + this.player_1_;
+        hash = 23 * hash + this.player_2_;
+        hash = 23 * hash + this.countries_count_;
+        hash = 23 * hash + Objects.hashCode(this.countries_list_owner_);
+        hash = 23 * hash + Objects.hashCode(this.countries_list_soldiers_);
+        hash = 23 * hash + Objects.hashCode(this.countries_edges_matrix_);
+        hash = 23 * hash + this.player_1_countries_;
+        hash = 23 * hash + this.player_2_countries_;
+        hash = 23 * hash + this.partitions_count_;
+        hash = 23 * hash + this.inner_partition_counter_;
+        hash = 23 * hash + Objects.hashCode(this.partitions_bonus_);
+        hash = 23 * hash + Objects.hashCode(this.partitions_countries_);
+        hash = 23 * hash + Objects.hashCode(this.game_started_);
+        hash = 23 * hash + Objects.hashCode(this.game_ended_);
+        hash = 23 * hash + this.winner_player_;
+        hash = 23 * hash + this.turn_state_;
+        hash = 23 * hash + this.current_player_;
+        hash = 23 * hash + this.attack_bonus_player_id_;
+        hash = 23 * hash + this.attack_bonus_;
+        return hash;
+    }
     
     @Override
     public Boolean set_count_of_countries(int countries_count) {
@@ -72,21 +172,25 @@ public class RiskGame implements IRiskGame{
         countries_count_ = countries_count;
         
         //set the owners of the countries to -1
-        countries_list_owner_ = new ArrayList(countries_count);
+        countries_list_owner_ = new ArrayList<Integer>(countries_count);
         for(int i=0; i<countries_count; i++) {
-            countries_list_owner_.set(i, -1);
+            countries_list_owner_.add(-1);
         }
         
         //initialize the edge matrices to all zeros
         countries_edges_matrix_ = new ArrayList(countries_count);
         for(int i=0; i<countries_count; i++) {
-            countries_edges_matrix_.set(i, new ArrayList(countries_count));
+            ArrayList<Integer> m1 = new ArrayList(countries_count);
+            for(int j=0; j<countries_count; j++) {
+                m1.add(0);
+            }
+            countries_edges_matrix_.add(m1);
         }
         
         //initialize soldiers list
         countries_list_soldiers_ = new ArrayList(countries_count);
         for(int i=0; i<countries_count; i++) {
-            countries_list_soldiers_.set(i, -1);
+            countries_list_soldiers_.add(-1);
         }
         
         return true;
@@ -139,8 +243,8 @@ public class RiskGame implements IRiskGame{
             return false;
         }
         
-        partitions_bonus_.set(inner_partition_counter_, partition_bonus);
-        partitions_countries_.set(inner_partition_counter_, partition_countries_ids);
+        partitions_bonus_.add(partition_bonus);
+        partitions_countries_.add(partition_countries_ids);
         
         inner_partition_counter_++;
         
@@ -203,8 +307,8 @@ public class RiskGame implements IRiskGame{
     @Override
     public ArrayList<Integer> get_players_ids() {
         ArrayList<Integer> players = new ArrayList(2);
-        players.set(0, player_1_);
-        players.set(1, player_2_);
+        players.add(player_1_);
+        players.add(player_2_);
         return players;
     }
 
@@ -384,7 +488,18 @@ public class RiskGame implements IRiskGame{
         new_game.start_game();
         return new_game;
     }
-
+    
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        RiskGame col = (RiskGame) super.clone();
+        col.countries_list_owner_ = (ArrayList<Integer>) this.countries_list_owner_.clone();
+        col.countries_list_soldiers_ = (ArrayList<Integer>) this.countries_list_soldiers_.clone();
+        col.countries_edges_matrix_ = (ArrayList<ArrayList<Integer>>) this.countries_edges_matrix_.clone();
+        col.partitions_bonus_ = (ArrayList<Integer>) this.partitions_bonus_.clone();
+        col.partitions_countries_ = (ArrayList<ArrayList<Integer>>) this.partitions_countries_.clone();
+        return col;
+    }
+    
     @Override
     public int get_cp_reinforcement_soldiers() {
         
@@ -482,7 +597,7 @@ public class RiskGame implements IRiskGame{
             return false;
         }
         
-        if(num_old_country <= 1 || num_new_country <= 1) {
+        if(num_old_country < 1 || num_new_country < 1) {
             return false;
         }
         

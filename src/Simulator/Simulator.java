@@ -20,7 +20,7 @@ public class Simulator implements ISimulate{
         switch(agentName) {
             case "AStar":
                 return new AStarAgent();
-            case "Agressive":
+            case "Aggressive":
                 return new AggressiveAgent();
             case "Greedy":
                 return new GreedyAgent();

@@ -2,6 +2,8 @@ package Model2;
 
 import Interfaces.IAgent;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.util.Pair;
 
 /**
@@ -29,11 +31,14 @@ public class GreedyAgent implements IAgent{
 
     @Override
     public void make_move() {
-        greedy_step();
+        try {
+            greedy_step();
+        } catch (CloneNotSupportedException ex) {
+        }
         game_.end_turn();
     }
     
-    private void greedy_step() {
+    private void greedy_step() throws CloneNotSupportedException {
         
         //get my countries
         ArrayList<Integer> my_countries = game_.get_player_countries(my_id_);
@@ -47,10 +52,10 @@ public class GreedyAgent implements IAgent{
         //for each country try to move the army to this country
         for(int i=0; i<my_countries.size(); i++) {
             
-            RiskGame tried_game = (RiskGame) game_.clone_game();
+            RiskGame tried_game = (RiskGame) game_.clone();
             tried_game.set_cp_soldiers(my_countries.get(i));
             
-            //try every attack possible
+            //try every attack possible after moving the bonus army
             ArrayList<Pair<Integer, Integer>> attack_pairs = tried_game.get_attackable_countries(my_id_);
             for(int j=0; j<attack_pairs.size(); j++) {
                 
@@ -60,14 +65,15 @@ public class GreedyAgent implements IAgent{
                 //try every possible combinations of scores
                 int score = tried_game.get_country_soldiers(my_country_id) - tried_game.get_country_soldiers(enemy_country_id);
                 for(int k=1; k<score; k++) {
-                    tried_game.cp_attack(my_country_id, enemy_country_id, k, score-k);
+                    RiskGame tried_game2 = (RiskGame) tried_game.clone();
+                    tried_game2.cp_attack(my_country_id, enemy_country_id, k, score-k);
                     
                     //evaluate those moves, if it was better than the best yet, then select it.
-                    if(heuristic_ev(tried_game) > heuristic_val) {
+                    if(heuristic_ev(tried_game2) > heuristic_val) {
                         cp_soldiers_country = my_countries.get(i);
                         selected_attack = attack_pairs.get(j);
                         selected_compination = new Pair(k, score-k);
-                        heuristic_val = heuristic_ev(tried_game); 
+                        heuristic_val = heuristic_ev(tried_game2); 
                     }
                 }
             }

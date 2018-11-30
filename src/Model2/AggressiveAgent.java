@@ -125,7 +125,7 @@ public class AggressiveAgent implements IAgent{
             //mark all existed possible attack
             for(int j=0; j<continent_countries.size(); j++) {
                 for(int k=0; k<attackable_pairs.size(); k++) {
-                    int enemy_country_id = possible_attacks.get(i).getValue();
+                    int enemy_country_id = attackable_pairs.get(k).getValue();
                     if(enemy_country_id == continent_countries.get(j)) {
                         possible_attacks.add(attackable_pairs.get(k));
                         possible_attacks_continents.add(continent_countries.get(j));
@@ -160,6 +160,7 @@ public class AggressiveAgent implements IAgent{
                 best_attack_score = game_.get_country_soldiers(my_country_id) - game_.get_country_soldiers(enemy_country_id);
                 best_attack_continent = game_.get_continent_bonus(enemy_continent);
                 best_attack_country = game_.get_country_soldiers(enemy_country_id);
+                best_attack_pair = possible_attacks.get(i);
             } 
             
             //if this continent bonus is the same as the one we have then compare
@@ -169,6 +170,7 @@ public class AggressiveAgent implements IAgent{
                     best_attack_score = game_.get_country_soldiers(my_country_id) - game_.get_country_soldiers(enemy_country_id);
                     best_attack_continent = game_.get_continent_bonus(enemy_continent);
                     best_attack_country = game_.get_country_soldiers(enemy_country_id);
+                    best_attack_pair = possible_attacks.get(i);
                 }
             }
         }

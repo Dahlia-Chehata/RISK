@@ -33,8 +33,7 @@ public class PassiveAgent implements IAgent{
         int army_in_country = Integer.MAX_VALUE;
         
         //get my countries
-        ArrayList<Integer> my_countries = game_.get_player_countries(my_id_);
-        
+        ArrayList<Integer> my_countries = game_.get_player_countries(my_id_);   
         //get the weakest country
         for(int i=0; i<my_countries.size(); i++) {
             if(game_.get_country_soldiers(my_countries.get(i)) < army_in_country) {
