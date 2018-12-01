@@ -1,6 +1,6 @@
 package Interfaces;
 
-import Model2.RiskGame;
+import Model.RiskGame;
 
 /**
  *

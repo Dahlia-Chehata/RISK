@@ -1,4 +1,4 @@
-package Model2;
+package Model;
 
 import Interfaces.IAgent;
 import java.util.ArrayList;
