@@ -3,6 +3,7 @@ package view;
 import Controller.Controller;
 import Interfaces.ISimulate;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -33,7 +34,6 @@ public class StartMenuController extends Application implements Initializable {
         }
         AnchorPane root = FXMLLoader.<AnchorPane>load(getClass().getResource("../Resources/StartMenu.fxml"));
         primaryStage.setScene(new Scene(root, 900, 575));
-        primaryStage.setResizable(false);
         primaryStage.show();
 
     }

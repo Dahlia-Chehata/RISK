@@ -1,12 +1,16 @@
 package view;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.ResourceBundle;
+
 import Controller.Controller;
 import Interfaces.IRiskGame;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceDialog;
@@ -15,9 +19,12 @@ import javafx.stage.Stage;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
+import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.ui.fx_viewer.FxViewPanel;
 import org.graphstream.ui.fx_viewer.FxViewer;
 import org.graphstream.ui.javafx.FxGraphRenderer;
+
+import static java.lang.System.exit;
 
 
 public class GraphMenuController {
@@ -25,9 +32,13 @@ public class GraphMenuController {
     private Stage ps = null;
     private Graph graph = null;
     private Controller con = null;
+    private List<Integer> player_0_state;
+    private List<Integer> player_1_state;
 
     public GraphMenuController(Controller control) {
         con = control;
+        player_0_state = new ArrayList<Integer>();
+        player_1_state = new ArrayList<Integer>();
     }
 
     private <E> E chooseElement(List<E> listOfElement, String title, String headertext, String contentText) {
@@ -87,20 +98,70 @@ public class GraphMenuController {
             ps = primaryStage;
         }
         con.game.start_game();
-        updateGraph(con.game);
+
         /*
-        * start game as fars need
-        * */
-        AnchorPane root = FXMLLoader.<AnchorPane>load(getClass().getResource("src/Resources/graph.fxml"));
+         * start game as fars need
+         * */
+        AnchorPane root = FXMLLoader.load(getClass().getResource("../Resources/StartMenu.fxml"));
+
+        graph = new SingleGraph("risk");
+        String styleSheet =
+                "node {" +
+                        "	fill-color: black;" +
+                        "}" +
+                        "node.marked {" +
+                        "	fill-color: red;" +
+                        "}";
+        graph.setAttribute("ui.stylesheet", styleSheet);
         FxViewer v = new FxViewer(graph, FxViewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
         v.enableAutoLayout();
         FxViewPanel graphPanel = (FxViewPanel) v.addDefaultView(false, new FxGraphRenderer());
-
-        root.getChildren().setAll(graphPanel);
-        ps.setScene(new Scene(root, 900, 575));
-        simulate();
+        graphPanel.resize(root.getPrefWidth(), root.getPrefHeight());
+        graphPanel.setPrefWidth(root.getPrefWidth());
+        graphPanel.setPrefHeight(root.getPrefHeight());
+        root.getChildren().clear();
+        root.getChildren().add(graphPanel);
+        Scene s = new Scene(root);
+        primaryStage.setScene(s);
+        drawGraph(con.game);
+        player_0_state = con.game.get_player_countries(0);
+        player_1_state = con.game.get_player_countries(1);
+       // simulate();
         declareResult();
-        goToResultMenu();
+    }
+
+    private void updateGraph(IRiskGame game) {
+        List<Integer> player_0_new_state = con.game.get_player_countries(0);
+        List<Integer> player_1_new_state = con.game.get_player_countries(1);
+        for(Integer coun : player_0_state){
+            boolean taken = false;
+            for(Integer enemyCoun : player_1_new_state){
+                if(enemyCoun.equals(coun)){
+                    taken = true;
+                    break;
+                }
+            }
+            if(taken){
+                Node v = graph.getNode(Integer.toString(coun));
+                v.setAttribute("ui.class","one");
+            }
+        }
+        for(Integer coun : player_1_state){
+            boolean taken = false;
+            for(Integer enemyCoun : player_0_new_state){
+                if(enemyCoun.equals(coun)){
+                    taken = true;
+                    break;
+                }
+            }
+            if(taken){
+                Node v = graph.getNode(Integer.toString(coun));
+                v.setAttribute("ui.class","zero");
+            }
+        }
+
+        player_0_state = player_0_new_state;
+        player_1_state = player_1_new_state;
     }
 
     private void simulate() {
@@ -138,16 +199,8 @@ public class GraphMenuController {
     /*
      *
      * */
-    private void updateGraph(IRiskGame game) {
-        graph = new MultiGraph("Risk Simulator");
-        String styleSheet =
-                "zero {" +
-                        "	fill-color: red;" +
-                        "}" +
-                        "one {" +
-                        "	fill-color: blue;" +
-                        "}";
-        graph.setAttribute("ui.stylesheet", styleSheet);
+    private void drawGraph(IRiskGame game) {
+
         //add first player nodes
         addNodes(game, 0, "zero");
         //add second player nodes
@@ -158,7 +211,7 @@ public class GraphMenuController {
             for (Integer neigId : game.get_country_neighbours(Integer.parseInt(v.getId()))) {
                 Node neighbourNode = graph.getNode(Integer.toString(neigId));
                 if (!v.hasEdgeBetween(neighbourNode)) {
-                    graph.addEdge(String.valueOf(edges++),v, neighbourNode);
+                    graph.addEdge(String.valueOf(edges++), v, neighbourNode);
                 }
             }
         }
@@ -168,8 +221,8 @@ public class GraphMenuController {
         for (Integer country : game.get_player_countries(playerId)) {
             Node newOne = graph.addNode(Integer.toString(country));
             newOne.setAttribute("ui.class", classInCss);
-            newOne.setAttribute("ui.label", Integer.toString(game.get_country_soldiers(country)));
         }
     }
 
 }
+
