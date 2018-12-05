@@ -1,6 +1,6 @@
 package Simulator;
 
-import Model2.*;
+import Model.*;
 import Interfaces.IAgent;
 import Interfaces.IRiskGame;
 import Interfaces.ISimulate;
@@ -11,20 +11,20 @@ import java.util.ArrayList;
  * @author faresmehanna
  */
 public class Simulator implements ISimulate{
-    
+
     IAgent player1, player2;
     IAgent last_player;
     IRiskGame game;
-    
-    Simulator() {
+
+    public Simulator() {
         game = null;
     }
-    
+
     private IAgent selectAgent(String agentName) {
         switch(agentName) {
             case "AStar":
                 return new AStarAgent();
-            case "Aggressive":
+            case "Agressive":
                 return new AggressiveAgent();
             case "Greedy":
                 return new GreedyAgent();
@@ -32,12 +32,14 @@ public class Simulator implements ISimulate{
                 return new NearlyPacifistAgent();
             case "Passive":
                 return new PassiveAgent();
-            case "Huname":
+            case "RTAStar":
+                return new RTAStarAgent();
+            case "Human":
                 return null;
         }
         return null;
     }
-    
+
     @Override
     public void SelectFirstAgent(String player) {
         player1 = selectAgent(player);
@@ -86,12 +88,12 @@ public class Simulator implements ISimulate{
 
     @Override
     public Boolean SimulateSingleStep2Agents() {
-        
+
         //if game ends
         if(game.is_game_end()) {
             return false;
         }
-        
+
         //if this is the first step
         if(last_player == null) {
             player1.make_move();
@@ -110,13 +112,13 @@ public class Simulator implements ISimulate{
             last_player = player1;
             return true;
         }
-        
+
         return false;
     }
-    
+
     @Override
     public Boolean SimulateSingleStep1Agent() {
-        
+
         //if game ends
         if(game.is_game_end()) {
             return false;
@@ -134,5 +136,5 @@ public class Simulator implements ISimulate{
 
         return false;
     }
-    
+
 }

@@ -1,9 +1,8 @@
-package Model2;
+package Model;
 
 import Interfaces.IAgent;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javafx.util.Pair;
 
 /**

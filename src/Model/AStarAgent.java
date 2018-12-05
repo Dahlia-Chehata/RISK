@@ -1,4 +1,4 @@
-package Model2;
+package Model;
 
 import Interfaces.IAgent;
 import Simulator.Simulator;
@@ -12,7 +12,7 @@ import java.util.Queue;
 import javafx.util.Pair;
 
 class AStarGameScore implements Comparable<AStarGameScore> {
-    
+
     public final AStarGameScore parent_;
     private final RiskGame game_;
     private final int player_id_;
@@ -22,7 +22,7 @@ class AStarGameScore implements Comparable<AStarGameScore> {
     public int cost_;
     public String action_;
 
-    
+
     AStarGameScore(RiskGame game, AStarGameScore parent, int state, int cost, int player_id, int enemy_id, String action) {
         player_id_ = player_id;
         enemy_id_ = enemy_id;
@@ -33,15 +33,15 @@ class AStarGameScore implements Comparable<AStarGameScore> {
         game_ = game;
         cost_ = cost;
     }
-    
+
     RiskGame get_game_obj() {
         return game_;
     }
-    
+
     private int heuristic(RiskGame game) {
         return game.get_player_countries(enemy_id_).size()*game.get_player_countries(enemy_id_).size();
     }
-    
+
     public static Comparator<AStarGameScore> idComparator = new Comparator<AStarGameScore>(){
         @Override
         public int compare(AStarGameScore c1, AStarGameScore c2) {
@@ -53,7 +53,7 @@ class AStarGameScore implements Comparable<AStarGameScore> {
     public int compareTo(AStarGameScore o) {
         return (int) (this.h_val_ - o.h_val_);
     }
-    
+
 };
 
 
@@ -68,10 +68,10 @@ public class AStarAgent implements IAgent{
     private int my_id_;
     private int enemy_id_;
     private Boolean random_moves_;
-    
+
     private List<AStarGameScore> wining_moves_;
     private int wining_moves_ptr_ = 0;
-    
+
     public AStarAgent() {
         wining_moves_ = new LinkedList<>();
         random_moves_ = false;
@@ -79,17 +79,17 @@ public class AStarAgent implements IAgent{
         game_ = null;
         my_id_ = -1;
     }
-    
+
     @Override
     public void set_game_info(RiskGame game, int player_id, int enemy_id) {
         game_ = game;
         my_id_ = player_id;
         enemy_id_ = enemy_id;
     }
-    
+
     @Override
     public void make_move() {
-        
+
         //handle first call
         if(random_moves_ == false && wining_moves_.size() == 0) {
             try {
@@ -98,7 +98,7 @@ public class AStarAgent implements IAgent{
                 random_moves_ = true;
             }
         }
-        
+
         if(random_moves_) {
             //move the army to any country I have
             game_.set_cp_soldiers(game_.get_player_countries(my_id_).get(0));
@@ -112,14 +112,14 @@ public class AStarAgent implements IAgent{
                         1);
             }
         } else {
-            
+
             /* get the moves from the list of optimal moves */
-            
+
             //get the set soldiers move
             int country_id = Integer.parseInt(wining_moves_.get(wining_moves_ptr_).action_);
             game_.set_cp_soldiers(country_id);
             wining_moves_ptr_++;
-            
+
             //check if there is an attack step
             String[] attack_parameters = wining_moves_.get(wining_moves_ptr_).action_.split(" ");
             if(attack_parameters.length == 4) {
@@ -132,9 +132,9 @@ public class AStarAgent implements IAgent{
         }
         game_.end_turn();
     }
-    
+
     private void A_Star_initialization() throws CloneNotSupportedException {
-        
+
         //the winning state after A* runs
         AStarGameScore wining_state = null;
 
@@ -147,9 +147,9 @@ public class AStarAgent implements IAgent{
 
         //visited set
         HashSet<RiskGame> visited = new HashSet();
-        
+
         while(!game_states_pq.isEmpty()) {
-            
+
             //get the best possible game state
             AStarGameScore best_game = game_states_pq.poll();
             RiskGame curr_game = best_game.get_game_obj();
@@ -159,7 +159,7 @@ public class AStarAgent implements IAgent{
                 wining_state = best_game;
                 break;
             }
-            
+
             //check if it's a lose state
             if(curr_game.is_game_end() && curr_game.get_winning_player() == enemy_id_) {
                 continue;
@@ -169,7 +169,7 @@ public class AStarAgent implements IAgent{
                 continue;
             }
             visited.add(curr_game);
-                        
+
             //check who is the current player
             if(curr_game.get_current_player_id() == my_id_) {
                 //if it is my agent, then check what move it is
@@ -177,22 +177,22 @@ public class AStarAgent implements IAgent{
                 //if state == 1, then do the attack
                 if (best_game.state_ == 0) {
                     //get my countries
-                    ArrayList<Integer> my_countries = curr_game.get_player_countries(my_id_);                    
+                    ArrayList<Integer> my_countries = curr_game.get_player_countries(my_id_);
                     //for each country try to move the army to this country
                     for(int i=0; i<my_countries.size(); i++) {
                         //move the army only and get ready for attack
                         RiskGame tried_game1 = (RiskGame) curr_game.clone();
                         tried_game1.set_cp_soldiers(my_countries.get(i));
-                        if(!visited.contains(tried_game1)) 
+                        if(!visited.contains(tried_game1))
                             game_states_pq.add(new AStarGameScore(tried_game1, best_game, 1, best_game.cost_+1, my_id_, enemy_id_, String.valueOf(my_countries.get(i))));
                         //move the army and skip the attack
                         RiskGame tried_game2 = (RiskGame) curr_game.clone();
                         tried_game2.set_cp_soldiers(my_countries.get(i));
                         tried_game2.end_turn();
-                        if(!visited.contains(tried_game2)) 
+                        if(!visited.contains(tried_game2))
                             game_states_pq.add(new AStarGameScore(tried_game2, best_game, -1, best_game.cost_+1, my_id_, enemy_id_, String.valueOf(my_countries.get(i))));
                     }
-                    
+
                 } else {
                     //try all possible attacks
                     ArrayList<Pair<Integer, Integer>> attack_pairs = curr_game.get_attackable_countries(my_id_);
@@ -208,19 +208,19 @@ public class AStarAgent implements IAgent{
                             tried_game.end_turn();
                             String action = String.valueOf(my_country_id) + " " + String.valueOf(enemy_country_id) + " " + String.valueOf(k) + " " + String.valueOf(score-k);
                             //push to the queue
-                            if(!visited.contains(tried_game)) 
+                            if(!visited.contains(tried_game))
                                 game_states_pq.add(new AStarGameScore(tried_game, best_game, -1, best_game.cost_, my_id_, enemy_id_, action));
                         }
                     }
                 }
             } else {
-               //if it is the enemy then play as a passive agent 
+                //if it is the enemy then play as a passive agent
                 RiskGame tried_game = (RiskGame) curr_game.clone();
                 IAgent enemy_agent = new PassiveAgent();
                 enemy_agent.set_game_info(tried_game, enemy_id_, my_id_);
                 enemy_agent.make_move();
                 //add it back to the queue
-                if(!visited.contains(tried_game)) 
+                if(!visited.contains(tried_game))
                     game_states_pq.add(new AStarGameScore(tried_game, best_game, 0, best_game.cost_+1, my_id_, enemy_id_, "ENEMYACTION"));
             }
         }
@@ -231,8 +231,8 @@ public class AStarAgent implements IAgent{
             random_moves_ = true;
             return;
         }
-        
-        
+
+
         //if there is a winning state, then conver it to an arrayList
         AStarGameScore curr_state = wining_state;
         while(wining_state.cost_ != 0) {
@@ -246,7 +246,7 @@ public class AStarAgent implements IAgent{
     private int heuristic_ev(RiskGame game) {
         return game.get_player_countries(enemy_id_).size();
     }
-    
 
-    
+
+
 }
