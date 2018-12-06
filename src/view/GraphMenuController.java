@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.function.IntToDoubleFunction;
 
 import Controller.Controller;
 import Interfaces.IRiskGame;
@@ -23,9 +24,11 @@ import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.ui.fx_viewer.FxViewPanel;
 import org.graphstream.ui.fx_viewer.FxViewer;
+import org.graphstream.ui.graphicGraph.stylesheet.Color;
 import org.graphstream.ui.javafx.FxGraphRenderer;
 
 import static java.lang.System.exit;
+import static java.lang.System.setOut;
 
 
 public class GraphMenuController {
@@ -33,17 +36,18 @@ public class GraphMenuController {
     private Stage ps = null;
     private Graph graph = null;
     private Controller con = null;
-    private List<Integer> player_0_state;
-    private List<Integer> player_1_state;
+    private static final String red = "fill-color: rgb(255,0,0);";
+    private static final String blue = "fill-color: rgb(0,0,255);";
+
 
     public GraphMenuController(Controller control) {
         con = control;
-        player_0_state = new ArrayList<Integer>();
-        player_1_state = new ArrayList<Integer>();
     }
 
     private <E> E chooseElement(List<E> listOfElement, String title, String headertext, String contentText) {
         ChoiceDialog<E> dialog = new ChoiceDialog<>(listOfElement.get(0), listOfElement);
+        dialog.setX(500);
+        dialog.setY(500);
         dialog.setTitle(title);
         dialog.setHeaderText(headertext);
         dialog.setContentText(contentText);
@@ -57,20 +61,15 @@ public class GraphMenuController {
 
     public void takeHumanMove(List<Integer> firstPlayer, List<Integer> secondPlayer) {
         Integer troopsIn = chooseElement(firstPlayer, "Insert Troops", "Select from your countries", "Choose Country:");
-        /*
-         * to add new troops
-         * */
+        if(troopsIn == null){
+            return;
+        }
         con.game.set_cp_soldiers(troopsIn);
+        updateGraph(con.game);
         Integer attacker = chooseElement(firstPlayer, "Attack", "Select country", "Choose Country to attack with:");
-        /*
-         * it means that in the current turn the player don't want to attack the other player.
-         * */
         if (attacker == null) {
             return;
         }
-        /*
-         * choose the country to attack
-         * */
         Integer attacked = chooseElement(secondPlayer, "Take", "Select country", "Choose Country to attack:");
         int totalTrops = con.game.get_country_soldiers(attacker) -
                 con.game.get_country_soldiers(attacked);
@@ -81,15 +80,13 @@ public class GraphMenuController {
             cannotAttack.showAndWait();
             return;
         }
+        System.out.println(totalTrops);
         List<String> distributeTroops = new ArrayList<>();
         for (int i = 1; i < totalTrops; ++i) {
             distributeTroops.add(new String(Integer.toString(i) + "-" + Integer.toString(totalTrops - i)));
         }
         String distribution = chooseElement(distributeTroops, "put", "distribute after attack", "Choose distribution");
         String[] solidersInEachCountry = distribution.split("-");
-        /*
-         * to distribute the new troops between the two countries
-         * */
         con.game.cp_attack(attacker, attacked,
                 Integer.parseInt(solidersInEachCountry[0]), Integer.parseInt(solidersInEachCountry[1]));
     }
@@ -99,21 +96,9 @@ public class GraphMenuController {
             ps = primaryStage;
         }
         con.game.start_game();
-
-        /*
-         * start game as fars need
-         * */
         AnchorPane root = FXMLLoader.load(getClass().getResource("../Resources/StartMenu.fxml"));
-
+        System.setProperty("gs.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
         graph = new SingleGraph("risk");
-        String styleSheet =
-                "node {" +
-                        "	fill-color: black;" +
-                        "}" +
-                        "node.marked {" +
-                        "	fill-color: red;" +
-                        "}";
-        graph.setAttribute("ui.stylesheet", styleSheet);
         FxViewer v = new FxViewer(graph, FxViewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
         v.enableAutoLayout();
         FxViewPanel graphPanel = (FxViewPanel) v.addDefaultView(false, new FxGraphRenderer());
@@ -125,55 +110,37 @@ public class GraphMenuController {
         Scene s = new Scene(root);
         primaryStage.setScene(s);
         drawGraph(con.game);
-        player_0_state = con.game.get_player_countries(0);
-        player_1_state = con.game.get_player_countries(1);
         simulate();
         declareResult();
     }
 
     private void updateGraph(IRiskGame game) {
-        List<Integer> player_0_new_state = con.game.get_player_countries(0);
-        List<Integer> player_1_new_state = con.game.get_player_countries(1);
-        for(Integer coun : player_0_state){
-            boolean taken = false;
-            for(Integer enemyCoun : player_1_new_state){
-                if(enemyCoun.equals(coun)){
-                    taken = true;
-                    break;
-                }
-            }
-            if(taken){
-                Node v = graph.getNode(Integer.toString(coun));
-                v.setAttribute("ui.class","one");
-            }
+        for(Integer coun : game.get_player_countries(0)){
+            Node v = graph.getNode(Integer.toString(coun));
+            v.setAttribute("ui.style",red);
+            String build = Integer.toString(coun) + " - " + Integer.toString(game.get_country_soldiers(coun));
+            v.setAttribute("ui.label", build);
         }
-        for(Integer coun : player_1_state){
-            boolean taken = false;
-            for(Integer enemyCoun : player_0_new_state){
-                if(enemyCoun.equals(coun)){
-                    taken = true;
-                    break;
-                }
-            }
-            if(taken){
-                Node v = graph.getNode(Integer.toString(coun));
-                v.setAttribute("ui.class","zero");
-            }
+        for(Integer coun : game.get_player_countries(1)){
+            Node v = graph.getNode(Integer.toString(coun));
+            v.setAttribute("ui.style",blue);
+            String build = Integer.toString(coun) + " - " + Integer.toString(game.get_country_soldiers(coun));
+            v.setAttribute("ui.label", build);
         }
-
-        player_0_state = player_0_new_state;
-        player_1_state = player_1_new_state;
     }
 
-    private void simulate() {
+    private void simulate() throws IOException {
         int currentPlayer = 0;
+        boolean ended = false;
         while (!con.game.is_game_end()) {
             if (con.isHuman[currentPlayer])
                 takeHumanMove(con.game.get_player_countries(currentPlayer),
-                        //change here
                         con.game.get_player_countries(1 - currentPlayer));
-            else
+            else {
                 con.simualtor.SimulateSingleStep2Agents();
+            }
+            con.game.end_turn();
+            currentPlayer = 1 - currentPlayer;
             updateGraph(con.game);
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setX(500);
@@ -181,13 +148,17 @@ public class GraphMenuController {
             alert.setTitle("Next Turn");
             alert.setContentText("Do you want to play the next turn ?");
             Optional<ButtonType> result = alert.showAndWait();
-            if((result.isPresent()) && (result.get() == ButtonType.OK)){
-                currentPlayer = 1 - currentPlayer;
-                con.game.end_turn();
+            if ((result.isPresent()) && (result.get() == ButtonType.OK)) {
                 System.out.println("the turn is played");
-            }else{
+            } else {
+                ended = true;
                 break;
             }
+        }
+        if (ended == false) {
+            declareResult();
+        } else {
+            goToResultMenu();
         }
     }
 
@@ -210,9 +181,9 @@ public class GraphMenuController {
     private void drawGraph(IRiskGame game) {
 
         //add first player nodes
-        addNodes(game, 0, "zero");
+        addNodes(game, 0, red);
         //add second player nodes
-        addNodes(game, 1, "one");
+        addNodes(game, 1, blue);
         //connect edges
         char edges = 'A';
         for (Node v : graph) {
@@ -228,7 +199,9 @@ public class GraphMenuController {
     private void addNodes(IRiskGame game, int playerId, String classInCss) {
         for (Integer country : game.get_player_countries(playerId)) {
             Node newOne = graph.addNode(Integer.toString(country));
-            newOne.setAttribute("ui.class", classInCss);
+            newOne.setAttribute("ui.style", classInCss);
+            String build = Integer.toString(country) + " - " + Integer.toString(game.get_country_soldiers(country));
+            newOne.setAttribute("ui.label", build);
         }
     }
 
