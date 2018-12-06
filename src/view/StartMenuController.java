@@ -77,8 +77,9 @@ public class StartMenuController extends Application implements Initializable {
 
     @FXML
     void startSimulation2(ActionEvent event) throws IOException, InterruptedException {
+        con = new Controller();
         con.simualtor.SelectFirstAgent(intelligentAgent.getValue());
-        con.simualtor.SelectSecondAgent("passive");
+        con.simualtor.SelectSecondAgent("Passive");
         new GraphMenuController(con).showGraph(ps);
     }
 

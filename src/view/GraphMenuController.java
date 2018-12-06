@@ -13,6 +13,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -126,7 +127,7 @@ public class GraphMenuController {
         drawGraph(con.game);
         player_0_state = con.game.get_player_countries(0);
         player_1_state = con.game.get_player_countries(1);
-       // simulate();
+        simulate();
         declareResult();
     }
 
@@ -174,23 +175,29 @@ public class GraphMenuController {
             else
                 con.simualtor.SimulateSingleStep2Agents();
             updateGraph(con.game);
-            try {
-                Thread.sleep(1000);
-            } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setX(500);
+            alert.setY(500);
+            alert.setTitle("Next Turn");
+            alert.setContentText("Do you want to play the next turn ?");
+            Optional<ButtonType> result = alert.showAndWait();
+            if((result.isPresent()) && (result.get() == ButtonType.OK)){
+                currentPlayer = 1 - currentPlayer;
+                con.game.end_turn();
+                System.out.println("the turn is played");
+            }else{
+                break;
             }
-            //toggle the player
-            currentPlayer = 1 - currentPlayer;
-            con.game.end_turn();
         }
     }
 
-    private void declareResult() {
-        simulate();
+    private void declareResult() throws IOException {
         Alert declare_winner = new Alert(Alert.AlertType.INFORMATION);
         declare_winner.setTitle("The Result");
         declare_winner.setHeaderText(null);
         declare_winner.setContentText("The winner is player : " + con.game.get_winning_player());
         declare_winner.showAndWait();
+        goToResultMenu();
     }
 
     private void goToResultMenu() throws IOException {
