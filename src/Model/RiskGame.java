@@ -50,7 +50,7 @@ public class RiskGame implements IRiskGame, Cloneable{
         countries_count_ = -1;
         game_started_ = false;
         game_ended_ = false;
-        current_player_ = 1;
+        current_player_ = 0 ;
         winner_player_ = -1;
         attack_bonus_ = 2;
         turn_state_ = 0;
@@ -554,7 +554,7 @@ public class RiskGame implements IRiskGame, Cloneable{
         if(turn_state_ != 0) {
             return false;
         }
-        
+
         if(country_id >= countries_count_ || get_current_player_id() != countries_list_owner_.get(country_id)) {
             return false;
         }

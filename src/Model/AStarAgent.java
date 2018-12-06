@@ -238,6 +238,7 @@ public class AStarAgent implements IAgent{
         while(wining_state.cost_ != 0) {
             if(!wining_state.action_.equals("ENEMYACTION")) {
                 wining_moves_.add(0, wining_state);
+                System.out.println(wining_state.action_);
             }
             wining_state = wining_state.parent_;
         }
