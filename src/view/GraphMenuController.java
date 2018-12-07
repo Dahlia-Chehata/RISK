@@ -10,6 +10,9 @@ import java.util.function.IntToDoubleFunction;
 
 import Controller.Controller;
 import Interfaces.IRiskGame;
+import Model.AStarAgent;
+import Model.GreedyAgent;
+import Model.RTAStarAgent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
@@ -135,13 +138,14 @@ public class GraphMenuController {
         while (!con.game.is_game_end()) {
             if (con.isHuman[currentPlayer])
                 takeHumanMove(con.game.get_player_countries(currentPlayer),
-                        con.game.get_player_countries(1 - currentPlayer));
+                con.game.get_player_countries(1 - currentPlayer));
             else {
                 con.simualtor.SimulateSingleStep2Agents();
             }
             con.game.end_turn();
             currentPlayer = 1 - currentPlayer;
             updateGraph(con.game);
+            
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setX(500);
             alert.setY(500);
@@ -156,6 +160,29 @@ public class GraphMenuController {
             }
         }
         if (ended == false) {
+        	String x=con.simualtor.getPlayer1().getClass().getName();
+        	System.out.println(x);
+            if (x =="Model.AStarAgent") {
+            	
+            	AStarAgent ag =(AStarAgent)con.simualtor.getPlayer1();
+            	System.out.println("Turns: "+ag.turns+" and expansions : "+ag.expansion);
+            	System.out.println("performance at f = 1 :"+(ag.turns+ag.expansion));
+            	System.out.println("performance at f = 100 :"+(ag.turns*100+ag.expansion));
+            	System.out.println("performance at f = 10000 :"+(ag.turns*10000+ag.expansion));
+
+            }else if (x =="Model.GreedyAgent") {
+            	GreedyAgent ag =(GreedyAgent)con.simualtor.getPlayer1();
+            	System.out.println("Turns: "+ag.turns+" and expansions : "+ag.expansions);
+            	System.out.println("performance at f = 1 :"+ (ag.turns+ag.expansions));
+            	System.out.println("performance at f = 100 :"+(ag.turns*100+ag.expansions));
+            	System.out.println("performance at f = 10000 :"+(ag.turns*10000+ag.expansions));
+            }else if(x=="Model.RTAStarAgent") {
+            	RTAStarAgent ag =(RTAStarAgent)con.simualtor.getPlayer1();
+            	System.out.println("Turns: "+ag.turns+" and expansions : "+ag.expansion);
+            	System.out.println("performance at f = 1 :"+ (ag.turns+ag.expansion));
+            	System.out.println("performance at f = 100 :"+(ag.turns*100+ag.expansion));
+            	System.out.println("performance at f = 10000 :"+(ag.turns*10000+ag.expansion));
+            }
             declareResult();
         } else {
             goToResultMenu();

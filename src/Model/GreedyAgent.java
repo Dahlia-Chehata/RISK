@@ -14,11 +14,14 @@ public class GreedyAgent implements IAgent{
     RiskGame game_;
     int my_id_;
     int enemy_id_;
+    public int expansions,turns;
     
     public GreedyAgent() {
         enemy_id_ = -1;
         game_ = null;
         my_id_ = -1;
+        expansions=0;
+        turns=0;
     }
     
     @Override
@@ -35,6 +38,7 @@ public class GreedyAgent implements IAgent{
         } catch (CloneNotSupportedException ex) {
         }
         game_.end_turn();
+        turns++;
     }
     
     private void greedy_step() throws CloneNotSupportedException {
@@ -69,6 +73,7 @@ public class GreedyAgent implements IAgent{
                     
                     //evaluate those moves, if it was better than the best yet, then select it.
                     if(heuristic_ev(tried_game2) > heuristic_val) {
+                    	expansions ++;
                         cp_soldiers_country = my_countries.get(i);
                         selected_attack = attack_pairs.get(j);
                         selected_compination = new Pair(k, score-k);

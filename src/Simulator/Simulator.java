@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class Simulator implements ISimulate{
 
     IAgent player1, player2;
-    IAgent last_player;
+	IAgent last_player;
     IRiskGame game;
 
     public Simulator() {
@@ -136,5 +136,8 @@ public class Simulator implements ISimulate{
 
         return false;
     }
+    public IAgent getPlayer1() {
+		return player1;
+	}
 
 }

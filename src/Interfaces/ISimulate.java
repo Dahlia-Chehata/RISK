@@ -23,5 +23,6 @@ public interface ISimulate {
     * SimulateSingleStep between 1 AI agent and human agent.
     * */
     public Boolean SimulateSingleStep1Agent();
+	public IAgent getPlayer1();
     
 }

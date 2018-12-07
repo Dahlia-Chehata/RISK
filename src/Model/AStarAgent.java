@@ -68,6 +68,7 @@ public class AStarAgent implements IAgent{
     private int my_id_;
     private int enemy_id_;
     private Boolean random_moves_;
+    public int expansion,turns;
 
     private List<AStarGameScore> wining_moves_;
     private int wining_moves_ptr_ = 0;
@@ -78,6 +79,8 @@ public class AStarAgent implements IAgent{
         enemy_id_ = -1;
         game_ = null;
         my_id_ = -1;
+        expansion=0;
+        turns=0;
     }
 
     @Override
@@ -131,6 +134,7 @@ public class AStarAgent implements IAgent{
             }
         }
         game_.end_turn();
+        turns++;
     }
 
     private void A_Star_initialization() throws CloneNotSupportedException {
@@ -153,6 +157,7 @@ public class AStarAgent implements IAgent{
             //get the best possible game state
             AStarGameScore best_game = game_states_pq.poll();
             RiskGame curr_game = best_game.get_game_obj();
+            expansion++;
 
             //check if it's a wining state
             if(curr_game.is_game_end() && curr_game.get_winning_player() == my_id_) {
@@ -233,7 +238,7 @@ public class AStarAgent implements IAgent{
         }
 
 
-        //if there is a winning state, then conver it to an arrayList
+        //if there is a winning state, then convert it to an arrayList
         AStarGameScore curr_state = wining_state;
         while(wining_state.cost_ != 0) {
             if(!wining_state.action_.equals("ENEMYACTION")) {
@@ -244,9 +249,9 @@ public class AStarAgent implements IAgent{
         }
     }
 
-    private int heuristic_ev(RiskGame game) {
-        return game.get_player_countries(enemy_id_).size();
-    }
+//    private int heuristic_ev(RiskGame game) {
+//        return game.get_player_countries(enemy_id_).size();
+//    }
 
 
 

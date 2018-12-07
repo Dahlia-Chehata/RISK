@@ -23,6 +23,7 @@ public class RTAStarAgent implements IAgent{
     private int my_id_;
     private int enemy_id_;
     private Boolean random_moves_;
+    public int expansion,turns;
     
     private List<AStarGameScore> wining_moves_;
     private int wining_moves_ptr_ = 0;
@@ -33,6 +34,8 @@ public class RTAStarAgent implements IAgent{
         enemy_id_ = -1;
         game_ = null;
         my_id_ = -1;
+        expansion=0;
+        turns=0;
     }
     
     @Override
@@ -83,6 +86,7 @@ public class RTAStarAgent implements IAgent{
             }
         }
         game_.end_turn();
+        turns++;
     }
     
     private void A_Star_initialization(int millis_limit) throws CloneNotSupportedException {
@@ -106,6 +110,7 @@ public class RTAStarAgent implements IAgent{
             //get the best possible game state
             AStarGameScore best_game = game_states_pq.poll();
             RiskGame curr_game = best_game.get_game_obj();
+            expansion++;
 
             //check if it's a wining state
             if(curr_game.is_game_end() && curr_game.get_winning_player() == my_id_) {
